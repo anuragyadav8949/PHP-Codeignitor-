@@ -1,4 +1,4 @@
-#Prod Cat, Vendor LOcation , Min no of order done by  vendor
+#Condtions to select Particular Vendor Based on Location,Prod category,Count of orders
 public function getProdCatId($prod_id)
 		{
 			$query = $this->db->query("SELECT prod_cat_id FROM f_product_master WHERE id = '$prod_id'");
@@ -44,20 +44,26 @@ public function getProdCatId($prod_id)
 			{
 				$query = $this->db->query("SELECT COUNT(*) as vendor_orders FROM orders 
 											WHERE v_id = '$vendors[$i]'");
-				 $result = $query->row();
+				$result = $query->row();
 				$res[] = array('orders_count'=>$result->vendor_orders,'vendor_id'=>$vendors[$i]);
 			}
-			// print_r($res);
+			//print_r($res);
 			$elig_order_count = min(array_column($res,'orders_count'));
-			
-			for ($i=0; $i <sizeof($res) ; $i++) { 
-				$min_order = array_search($elig_order_count,$res[$i]);
-				$elig_vendor_id = next($res[$i]);
+			$elig_vendor_id = 0;
+			//echo "Min Order ".$elig_order_count."<br>";
+
+			for ($i=0; $i < sizeof($res) ; $i++) 
+			{ 
+				if($res[$i]['orders_count'] ==$elig_order_count)
+				{
+					for($j=0;$j<sizeof($res[$i]);$j++)
+					{
+						$elig_vendor_id = $res[$i]['vendor_id'];
+					}
+					break;
+				}
+				
 			}
-			// echo "Orders Count Are ";
-			// print_r($key);
-			// echo "Vendor Id is ";
-			// print_r($next_key);
 			return $elig_vendor_id;
 		}
 
