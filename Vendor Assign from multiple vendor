@@ -1,0 +1,72 @@
+#Prod Cat, Vendor LOcation , Min no of order done by  vendor
+public function getProdCatId($prod_id)
+		{
+			$query = $this->db->query("SELECT prod_cat_id FROM f_product_master WHERE id = '$prod_id'");
+			//echo $this->db->last_query();exit;
+			return $query->result_array();
+		}
+
+		/******************* VENDOR **********************/
+		//get vendor id from f_vendor with same location and selling prod cat
+
+		//Assigning vendor on the basis of their location only
+		// public function orderToVendor($orderid)
+		// {
+		// 	$query = $this->db->query("SELECT v.id as vendor_id FROM f_vendor as v 
+		// 		LEFT JOIN orders as o ON v.oprtng_location_id = o.oprtng_location_id 
+		// 		where o.order_id = '$orderid'");
+		// 	return $query->row();
+		// }
+
+		//Get All vendors based on location,prod_cat
+		public function orderToVendor($orderid,$prod_cat_id)
+		{
+			$query = $this->db->query("SELECT v.id as vendor_id FROM f_vendor as v 
+				LEFT JOIN orders as o ON v.oprtng_location_id = o.oprtng_location_id 
+				where o.order_id = '$orderid' 
+				AND  FIND_IN_SET('$prod_cat_id',v.product_category)");
+
+			$total_vendors = $query->result_array();
+			$ven =array();
+            for($i = 0; $i < sizeOf($total_vendors);$i++)
+            {
+                array_push($ven,$total_vendors[$i]['vendor_id']);
+            }
+            return $this->getVendorsOrdersCount($ven);
+		}
+
+		public function getVendorsOrdersCount($vendors)
+		{
+			//print_r($vendors);exit;
+			$ordersCount = array();
+			
+			for($i=0;$i<sizeOf($vendors);$i++)
+			{
+				$query = $this->db->query("SELECT COUNT(*) as vendor_orders FROM orders 
+											WHERE v_id = '$vendors[$i]'");
+				 $result = $query->row();
+				$res[] = array('orders_count'=>$result->vendor_orders,'vendor_id'=>$vendors[$i]);
+			}
+			// print_r($res);
+			$elig_order_count = min(array_column($res,'orders_count'));
+			
+			for ($i=0; $i <sizeof($res) ; $i++) { 
+				$min_order = array_search($elig_order_count,$res[$i]);
+				$elig_vendor_id = next($res[$i]);
+			}
+			// echo "Orders Count Are ";
+			// print_r($key);
+			// echo "Vendor Id is ";
+			// print_r($next_key);
+			return $elig_vendor_id;
+		}
+
+
+		public function assignVendor($order_id,$vendor_id)
+		{
+			$data=array('v_id'=>$vendor_id);
+			//print_r($data);exit;
+			$this->db->query("UPDATE orders SET v_id = $data[v_id]
+				WHERE order_id = $order_id");
+			return true;
+		}
