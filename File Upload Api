@@ -1,0 +1,198 @@
+public function updateImage_post(){ 
+         
+     $retailer_id = $this->post('retailer_id');
+     $doc_type = $this->post('doc_type_id');
+     $table='retailer_document';
+     $doc_format = $this->post('doc_format'); 
+      
+        if($doc_type == 1){
+            $gst_img = $_FILES['gst_img']['name'];
+        }elseif($doc_type == 2){
+            $food_lis_img = $_FILES['food_lis_img']['name'];
+        }elseif($doc_type == 3){
+            $drug20_img = $_FILES['drug20_img']['name'];
+        }elseif($doc_type == 4){
+            $drug21_img = $_FILES['drug21_img']['name'];
+        }
+        
+        if(!empty($gst_img)){
+            
+            $dir="public/resources/retailer_docx/";
+            $gst_img = explode(".", $_FILES["gst_img"]["name"]);
+            $new_gst_img = 'GST_'.$retailer_id.'.'.end($gst_img);
+            $upload_file = $dir.$new_gst_img;
+            //print_r($new_gst_img);exit;
+            
+            if (!file_exists($dir) and !is_dir($dir)){
+                mkdir($dir);
+            }
+            if (is_file($new_gst_img)){
+                unlink($new_gst_img);
+            }
+            
+            if (move_uploaded_file($_FILES['gst_img']['tmp_name'], $upload_file)) {
+                echo "Suucess";
+            
+            } else {
+                echo "Failed";
+            }
+            //insert into db
+            $checkexists = $this->Profile_model->checkDocExistsRetailer($retailer_id,$doc_type);
+            //print_r($checkexists);exit;
+            if($checkexists != false)//if img exist
+            {
+              $data = array(
+                'image'=>$new_gst_img,
+                'updated_date_time'=>date('Y-m-d h:i:s')
+              );
+              $this->Profile_model->updateDocxApi($retailer_id,$doc_type,$data,$table);
+              
+            }else{
+              $data=array(
+                'retailer_document_type_id'=>$doc_type,
+                'image'=>$new_gst_img,
+                'retailer_id'=>$retailer_id,
+                'updated_date_time' => date('Y-m-d h:i:s')
+              );
+              $this->Profile_model->uploadDocx($data,$table);
+            }
+            
+            //echo $this->db->last_query();exit;
+            $this->response(['success'=>'1','message'=>'Image Uploaded Succesfully!'],REST_Controller::HTTP_OK);
+      }
+
+        if(!empty($food_lis_img)){
+            
+            $dir="public/resources/retailer_docx/";
+            $food_lis_img = explode(".", $_FILES["food_lis_img"]["name"]);
+            $new_food_lis_img = 'FOOD_'.$retailer_id.'.'.end($food_lis_img);
+            $upload_file = $dir.$new_food_lis_img;
+            //print_r($new_gst_img);exit;
+            
+            if (!file_exists($dir) and !is_dir($dir)){
+                mkdir($dir);
+            }
+            if (is_file($new_food_lis_img)){
+                unlink($new_food_lis_img);
+            }
+            
+            if (move_uploaded_file($_FILES['food_lis_img']['tmp_name'], $upload_file)) {
+                echo "Suucess";
+            
+            } else {
+                echo "Failed";
+            }
+            
+            //insert into db
+            $checkexists = $this->Profile_model->checkDocExistsRetailer($retailer_id,$doc_type);
+            //print_r($checkexists);exit;
+            if($checkexists != false)//if img exist
+            {
+              $data = array(
+                'image'=>$new_food_lis_img,
+                'updated_date_time'=>date('Y-m-d h:i:s')
+              );
+              $this->Profile_model->updateDocxApi($retailer_id,$doc_type,$data,$table);
+              
+            }else{
+              $data=array(
+                'retailer_document_type_id'=>$doc_type,
+                'image'=>$new_food_lis_img,
+                'retailer_id'=>$retailer_id,
+                'updated_date_time' => date('Y-m-d h:i:s')
+              );
+              $this->Profile_model->uploadDocx($data,$table);
+            }
+            
+            //echo $this->db->last_query();exit;
+            $this->response(['success'=>'1','message'=>'Image Uploaded Succesfully!'],REST_Controller::HTTP_OK);
+      }
+    
+        if(!empty($drug20_img)){
+          
+          $dir="public/resources/retailer_docx/";
+            $drug20_img = explode(".", $_FILES["drug20_img"]["name"]);
+            $new_drug20_img = 'DRUG20_'.$retailer_id.'.'.end($drug20_img);
+            $upload_file = $dir.$new_drug20_img;
+            //print_r($new_drug20_img);exit;
+            
+            if (!file_exists($dir) and !is_dir($dir)){
+                mkdir($dir);
+            }
+            if (is_file($new_drug20_img)){
+                unlink($new_drug20_img);
+            }
+            
+            if (move_uploaded_file($_FILES['drug20_img']['tmp_name'], $upload_file)) {
+                echo "Suucess";
+            
+            } else {
+                echo "Failed";
+            }
+          
+          //insert into db
+          $checkexists = $this->Profile_model->checkDocExistsRetailer($retailer_id,$doc_type);
+          
+          if($checkexists != false)//if img exist
+          {
+            $data = array(
+              'image'=>$new_drug20_img,
+              'updated_date_time'=>date('Y-m-d h:i:s')
+            );
+            $this->Profile_model->updateDocxApi($retailer_id,$doc_type,$data,$table);
+          }else{
+            $data=array(
+              'retailer_document_type_id'=>$doc_type,
+              'image'=>$new_drug20_img,
+              'retailer_id'=>$retailer_id,
+              'updated_date_time' => date('Y-m-d h:i:s')
+            );
+            $this->Profile_model->uploadDocx($data,$table);
+          }
+            $this->response(['success'=>'1','message'=>'Image Uploaded Succesfully!'],REST_Controller::HTTP_OK);
+      }
+
+        if(!empty($drug21_img)){
+          
+          $dir="public/resources/retailer_docx/";
+            $drug21_img = explode(".", $_FILES["drug21_img"]["name"]);
+            $new_drug21_img = 'DRUG21_'.$retailer_id.'.'.end($drug21_img);
+            $upload_file = $dir.$new_drug21_img;
+            //print_r($new_gst_img);exit;
+            
+            if (!file_exists($dir) and !is_dir($dir)){
+                mkdir($dir);
+            }
+            if (is_file($new_drug21_img)){
+                unlink($new_drug21_img);
+            }
+            
+            if (move_uploaded_file($_FILES['drug21_img']['tmp_name'], $upload_file)) {
+                echo "Suucess";
+            
+            } else {
+                echo "Failed";
+            }
+          
+          //insert into db
+          $checkexists = $this->Profile_model->checkDocExistsRetailer($retailer_id,$doc_type);
+          
+          if($checkexists != false)//if img exist
+          {
+            $data = array(
+              'image'=>$new_drug21_img,
+              'updated_date_time'=>date('Y-m-d h:i:s')
+            );
+            $this->Profile_model->updateDocxApi($retailer_id,$doc_type,$data,$table);
+          }else{
+            $data=array(
+              'retailer_document_type_id'=>$doc_type,
+              'image'=>$new_drug21_img,
+              'retailer_id'=>$retailer_id,
+              'updated_date_time' => date('Y-m-d h:i:s')
+            );
+            $this->Profile_model->uploadDocx($data,$table);
+          }
+            $this->response(['success'=>'1','message'=>'Image Uploaded Succesfully!'],REST_Controller::HTTP_OK);
+      }
+  }
